@@ -11,12 +11,24 @@
 # 支持多人同时计算工资
 # 打印税后工资列表
 
-import sys
+import sys,os
+from UserWage import UserWage
+from Config import Config
+from UserWageDetail import UserWageDetail
 
+def calc_real_wages(job_num,wages,JShuL,JShuH,YangLao,YiLiao,ShiYe,GongShang,ShengYu,GongJiJin):
+    # JiShuL 为社保缴费基数的下限，即工资低于 JiShuL 的值的时候，需要按照 JiShuL 的数值乘以缴费比例来缴纳社保。
+    # JiShuH 为社保缴费基数的上限，即工资高于 JiShuH 的值的时候，需要按照 JiShuH 的数值乘以缴费比例缴纳社保。
+    ji_shu = wages
+    if wages < JShuL:
+        ji_shu = JShuL
 
-def calc_real_wages(wages):
+    if wages > JShuH:
+        ji_shu = JShuH
+
     # 应交保险 养老保险：8 %; 医疗保险：2 %; 失业保险：0.5 %; 工伤保险：0 %; 生育保险：0 %; 公积金：6 %
-    insurance = wages * (0.08 + 0.02 + 0.005 + 0.06)
+
+    insurance = ji_shu * (YangLao + YiLiao + ShiYe + GongShang + ShengYu+ GongJiJin)
 
     # 起征点
     threshold = 3500
@@ -70,22 +82,33 @@ def calc_real_wages(wages):
     # 特殊处理
     if real_wages < 0:
         real_wages = 0
-
-    return  real_wages
+    # 工号, 税前工资, 社保金额, 个税金额, 税后工资
+    return [job_num, wages, insurance, taxes_amount, real_wages]
 
 
 if __name__ == '__main__':
-    args = sys.argv[1:]
-    wage_collection = {}
-    for arg in args:
-        arg_list =  arg.split(':')
-        try:
-            wage = int(arg_list[1])
-        except:
-            print('Parameter Error')
-            exit(0)
-        result = calc_real_wages(wage)
-        wage_collection[arg_list[0]] = format(result, '.2f')
+    # 获取用户信息
+    user_info_file_path = os.path.join(sys.path[0], 'UserWage.csv')
+    user = UserWage(user_info_file_path)
+    wage_info = user.get_all_wages()
 
-    for key, val in wage_collection.items():
-        print(key + ':'+ val)
+    # 获取个税配置
+    config_file_path = os.path.join(sys.path[0], 'config.cfg')
+    config = Config(config_file_path)
+    JShuL = config.get_config_item('JShuL')
+    JShuH = config.get_config_item('JShuH')
+    YangLao = config.get_config_item('YangLao')
+    YiLiao = config.get_config_item('YiLiao')
+    ShiYe = config.get_config_item('ShiYe')
+    GongShang = config.get_config_item('GongShang')
+    ShengYu = config.get_config_item('ShengYu')
+    GongJiJin = config.get_config_item('GongJiJin')
+
+    for user_num, wage in wage_info.items():
+        # 计算工资
+        wage_detail = calc_real_wages(user_num, wage, JShuL, JShuH, YangLao, YiLiao, ShiYe, GongShang, ShengYu, GongJiJin)
+
+        # 保存信息
+        save_wage_path = os.path.join(sys.path[0], 'userdata.csv')
+        save_wage = UserWageDetail(save_wage_path)
+        save_wage.write_list_to_file(wage_detail)
