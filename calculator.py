@@ -82,7 +82,8 @@ def calc_real_wages(job_num,wages,JShuL,JShuH,YangLao,YiLiao,ShiYe,GongShang,She
     if real_wages < 0:
         real_wages = 0
     # 工号, 税前工资, 社保金额, 个税金额, 税后工资
-    return [job_num, wages, format(insurance,'.2f'), format(taxes_amount,'.2f'), format(real_wages,'.2f')]
+    # print ([job_num, wages, format(insurance,'.2f'), format(taxes_amount,'.2f'), format(real_wages,'.2f')])
+    return [job_num, int(wages), format(insurance,'.2f'), format(taxes_amount,'.2f'), format(real_wages,'.2f')]
 
 
 if __name__ == '__main__':
