@@ -2,7 +2,7 @@
 # -*- coding:utf-8 _*-
 """
 @author:Administrator
-@file: Config.py
+@file: TaxConfig.py
 @time: 2018/03/16
 配置文件格式示例：
 JiShuL = 2193.00
@@ -23,7 +23,7 @@ class Config(object):
 
     def get_config_item(self, key):
         try:
-            with open(self.file_path, 'r') as file:
+            with open(self.file_path, 'r', encoding='UTF-8') as file:
                 for str_line in file:
                     list_line = str_line.split('=')
                     if list_line[0].strip() == key:

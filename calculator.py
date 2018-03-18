@@ -12,9 +12,8 @@
 # 打印税后工资列表
 
 import sys,os
-from UserWage import UserWage
-from Config import Config
-from UserWageDetail import UserWageDetail
+from user import UserWage
+from TaxConfig import Config
 
 def calc_real_wages(job_num,wages,JShuL,JShuH,YangLao,YiLiao,ShiYe,GongShang,ShengYu,GongJiJin):
     # JiShuL 为社保缴费基数的下限，即工资低于 JiShuL 的值的时候，需要按照 JiShuL 的数值乘以缴费比例来缴纳社保。
@@ -87,14 +86,26 @@ def calc_real_wages(job_num,wages,JShuL,JShuH,YangLao,YiLiao,ShiYe,GongShang,She
 
 
 if __name__ == '__main__':
+    # 取参数文件
+
+    args = sys.argv[1:]
+    param_c_index = args.index('-c')
+    tax_config_path = args[param_c_index+1]
+
+    param_d_index = args.index('-d')
+    usr_info_config_path = args[param_d_index+1]
+
+    param_o_index = args.index('-o')
+    wages_detail_config_path = args[param_o_index + 1]
+
     # 获取用户信息
-    user_info_file_path = os.path.join(sys.path[0], 'UserWage.csv')
-    user = UserWage(user_info_file_path)
-    wage_info = user.get_all_wages()
+    # user_info_file_path = os.path.join(sys.path[0], 'UserWage.csv')
+    user = UserWage(usr_info_config_path)
+    wage_info = user.get_user_wage()
 
     # 获取个税配置
-    config_file_path = os.path.join(sys.path[0], 'config.cfg')
-    config = Config(config_file_path)
+    # config_file_path = os.path.join(sys.path[0], 'config.cfg')
+    config = Config(tax_config_path)
     JShuL = config.get_config_item('JShuL')
     JShuH = config.get_config_item('JShuH')
     YangLao = config.get_config_item('YangLao')
@@ -109,6 +120,6 @@ if __name__ == '__main__':
         wage_detail = calc_real_wages(user_num, wage, JShuL, JShuH, YangLao, YiLiao, ShiYe, GongShang, ShengYu, GongJiJin)
 
         # 保存信息
-        save_wage_path = os.path.join(sys.path[0], 'userdata.csv')
-        save_wage = UserWageDetail(save_wage_path)
+        # save_wage_path = os.path.join(sys.path[0], 'userdata.csv')
+        save_wage = UserWage(wages_detail_config_path)
         save_wage.write_list_to_file(wage_detail)
