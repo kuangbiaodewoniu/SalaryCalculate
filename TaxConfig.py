@@ -20,13 +20,16 @@ class Config(object):
 
     def __init__(self,value):
         self.file_path = value
+        # print (self.file_path)
 
     def get_config_item(self, key):
         try:
             with open(self.file_path, 'r', encoding='UTF-8') as file:
                 for str_line in file:
                     list_line = str_line.split('=')
+                    # print(list_line)
                     if list_line[0].strip() == key:
+                        # print (float(list_line[1].strip()))
                         return  float(list_line[1].strip())
             return 0
         except FileNotFoundError:
@@ -35,7 +38,7 @@ class Config(object):
 
 
 if __name__ == '__main__':
-    config_file = os.path.join(sys.path[0], 'config.cfg')
+    config_file = os.path.join(sys.path[0], 'test.cfg')
     print (config_file)
     instance = Config(config_file)
     result = instance.get_config_item('ShiYe')

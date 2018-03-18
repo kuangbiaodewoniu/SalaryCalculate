@@ -82,7 +82,7 @@ def calc_real_wages(job_num,wages,JShuL,JShuH,YangLao,YiLiao,ShiYe,GongShang,She
     if real_wages < 0:
         real_wages = 0
     # 工号, 税前工资, 社保金额, 个税金额, 税后工资
-    return [job_num, wages, insurance, taxes_amount, real_wages]
+    return [job_num, wages, format(insurance,'.2f'), format(taxes_amount,'.2f'), format(real_wages,'.2f')]
 
 
 if __name__ == '__main__':
@@ -106,8 +106,8 @@ if __name__ == '__main__':
     # 获取个税配置
     # config_file_path = os.path.join(sys.path[0], 'config.cfg')
     config = Config(tax_config_path)
-    JShuL = config.get_config_item('JShuL')
-    JShuH = config.get_config_item('JShuH')
+    JShuL = config.get_config_item('JiShuL')
+    JShuH = config.get_config_item('JiShuH')
     YangLao = config.get_config_item('YangLao')
     YiLiao = config.get_config_item('YiLiao')
     ShiYe = config.get_config_item('ShiYe')
